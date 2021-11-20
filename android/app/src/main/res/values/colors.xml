@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- current colors
+    X is the color for light mode
+    X0 is the same color tuned for dark mode
+    -->
+    <color name="purple">#7A60CC</color>
+    <color name="purple0">#B79EF2</color>
+    <color name="blue">#0D73D1</color>
+    <color name="blue0">#89C4FA</color>
+    <color name="light">#F8F8F8</color>
+    <color name="light0">#E0E0E0</color>
+    <color name="dark">#262626</color>
+
+    <!-- old colors -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
