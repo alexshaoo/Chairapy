@@ -6,6 +6,6 @@
     <string name="white_noise">White Noise</string>
     <string name="menuicon">menuIcon</string>
     <string name="how_do_i_look">How do I look?</string>
-    <string name="press_to_speak">Press to speak</string>
+    <string name="speak_prompt">How are you feeling?</string>
     <string name="camera">Camera</string>
 </resources>

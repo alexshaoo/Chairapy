@@ -4,9 +4,9 @@
     X is the color for light mode
     X0 is the same color tuned for dark mode
     -->
-    <color name="purple">#7A60CC</color>
+    <color name="purple">#997CF3</color>
     <color name="purple0">#B79EF2</color>
-    <color name="blue">#0D73D1</color>
+    <color name="blue">#68AEEE</color>
     <color name="blue0">#89C4FA</color>
     <color name="light">#F8F8F8</color>
     <color name="light0">#E0E0E0</color>
