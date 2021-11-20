@@ -25,11 +25,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <SearchView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layoutDirection="rtl"/>
-
     </TableRow>
 
     <TableRow
@@ -112,7 +107,6 @@
         android:layout_marginTop="518dp"
         android:layout_marginEnd="121dp"
         android:text="@string/press_to_speak"
-        android:textColor="#000"
         android:textSize="26sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -129,12 +123,5 @@
         android:layout_marginBottom="60dp"
         android:gravity="center"
         android:src="@drawable/ic_mic" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/menuicon"
-        app:srcCompat="@drawable/menu" />
 
 </RelativeLayout>
