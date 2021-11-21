@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+
+    <!-- guys what does this do -->
+
+    <TextView
+        android:id="@+id/relaxTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/relax"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/musicBtn"
+        android:layout_width="144dp"
+        android:layout_height="97dp"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:text="@string/music"
+        app:cornerRadius="16dp"
+        tools:ignore="TextContrastCheck,TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/emotionTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/how_do_i_look"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/cameraBtn"
+        android:layout_width="144dp"
+        android:layout_height="97dp"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:text="@string/camera"
+        app:cornerRadius="16dp"
+        tools:ignore="TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/textTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/speak_prompt"
+        android:textSize="24sp"
+        android:textStyle="normal" />
+
+    <ImageButton
+        android:id="@+id/voiceBtn"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/roundcorner"
+        android:color="@color/blue"
+        android:contentDescription="@string/speak_prompt"
+        android:elevation="10dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_mic_black_36dp"
+        tools:ignore="ImageContrastCheck" />
+
+</LinearLayout>
