@@ -12,12 +12,12 @@
 
 int analogPin = A5; // potentiometer wiper (middle terminal) connected to analog pin 3
                     // outside leads to ground and +5V
-int val = 0;  // variable to store the value read
+float val = 0.0;  // variable to store the value read
 int count = 0;
 int threshold = 770;
-float avg = 1023;
-int readings[12] = {1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023}; // 6 mins of readings
-float history[10] = {1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023}; // 30 min of averages from 6 min sliding window, updated every 3 min
+float avg = 3.3;
+float readings[12] = {3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3}; // 6 mins of readings
+float history[10] = {3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3}; // 30 min of averages from 6 min sliding window, updated every 3 min
 
 const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
 // for your motor
@@ -34,9 +34,9 @@ unsigned long currentTime;
 unsigned short readInterval = 100;
 
 
-float average (int * array, int len)  // assuming array is int.
+float average (float * array, int len)  // assuming array is float.
 {
-  long sum = 0L ;  // sum will be larger than an item, long for safety.
+  float sum = 0 ;  // sum will be larger than an item, long for safety.
   for (int i = 0 ; i < len ; i++)
     sum += array [i] ;
   return  ((float) sum) / len ;  // average will be fractional, so float may be appropriate.
@@ -54,7 +54,7 @@ void loop() {
   if (currentTime - startTime >= readInterval) {
     startTime = currentTime;
     
-    val = analogRead(analogPin);  // read the input pin
+    val = analogRead(analogPin)*3.3/1023;  // read the input pin
     readings[count % 12] = val;
     count++;
     // average calculated every 3 minutes
