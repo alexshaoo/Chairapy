@@ -10,11 +10,13 @@
 
 #include <Stepper.h>
 
-int analogPin = A5; // potentiometer wiper (middle terminal) connected to analog pin 3
-                    // outside leads to ground and +5V
+int analogPin = A5; // potentiometer wiper (middle terminal) connected to analog pin 5
+                    // outside leads to ground and +3.3V
 float val = 0.0;  // variable to store the value read
 int count = 0;
 int threshold = 770;
+double lowBound = 1.0;
+double highBound = 3.0;
 float avg = 3.3;
 float readings[12] = {3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3}; // 6 mins of readings
 float history[10] = {3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3, 3.3}; // 30 min of averages from 6 min sliding window, updated every 3 min
@@ -54,7 +56,7 @@ void loop() {
   if (currentTime - startTime >= readInterval) {
     startTime = currentTime;
     
-    val = analogRead(analogPin)*3.3/1023;  // read the input pin
+    val = analogRead(analogPin);//*3.3/1023 - lowBound;  // read the input pin
     readings[count % 12] = val;
     count++;
     // average calculated every 3 minutes
