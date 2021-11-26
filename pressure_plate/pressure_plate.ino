@@ -35,6 +35,7 @@ unsigned long startTime;
 unsigned long currentTime;
 unsigned short readInterval = 100;
 
+String message; //string that stores the incoming message
 
 float average (float * array, int len)  // assuming array is float.
 {
@@ -78,6 +79,20 @@ void loop() {
     myStepper.step(stepsPerRevolution / 100);
     //Serial.println("Get up and stretch a little :D");
   }
+
+  while(Serial.available())
+  {//while there is data available on the serial monitor
+    message+=char(Serial.read());//store string from serial command
+  }
+  if(!Serial.available())
+  {
+    if(message!="")
+    {//if data is available
+      Serial.println(message); //show the data
+      message=""; //clear the data
+    }
+  }
+  delay(100);
 }
 
 
