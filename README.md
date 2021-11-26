@@ -1,2 +1,6 @@
-# Chairapy
-Something to lean on in times of need
+# App
+
+# Pressure Mat
+
+# Emotion inference
+Uses BertNLClassifier with tflite
