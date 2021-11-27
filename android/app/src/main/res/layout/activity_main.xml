@@ -10,9 +10,38 @@
     android:orientation="vertical"
     android:padding="12dp">
 
+    <LinearLayout
+        android:id="@+id/Settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remind me to move every "
+            android:textSize="@dimen/font_size" />
+
+        <NumberPicker
+            android:id="@+id/buzzSet"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:dividerPadding="0dp"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:showDividers="none" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" minutes."
+            android:textSize="@dimen/font_size" />
+    </LinearLayout>
 
     <!-- guys what does this do -->
-
     <TextView
         android:id="@+id/relaxTxt"
         android:layout_width="match_parent"
@@ -21,7 +50,7 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="@string/relax"
-        android:textSize="20sp" />
+        android:textSize="@dimen/font_size" />
 
     <Button
         android:id="@+id/musicBtn"
@@ -43,7 +72,7 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="@string/how_do_i_look"
-        android:textSize="20sp" />
+        android:textSize="@dimen/font_size" />
 
     <Button
         android:id="@+id/cameraBtn"
