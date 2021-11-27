@@ -1,45 +1,29 @@
 package com.se101.chairapy;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
-import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.se101.chairapy.ml.Emotion;
-import com.se101.chairapy.tokenization.FullTokenizer;
-
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.label.Category;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
@@ -49,13 +33,19 @@ public class MainActivity extends AppCompatActivity {
     //TextView mTextTv;
     ImageButton mVoiceBtn;
 
+    //Receiver for alarms
+    AlarmReceiver receiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createNotificationChannel();
+
         //mTextTv = findViewById(R.id.textTV);
         mVoiceBtn = findViewById(R.id.voiceBtn);
+
         NumberPicker BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
         BuzzSetter.setMinValue(5);
         BuzzSetter.setMaxValue(120);
@@ -73,13 +63,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mVoiceBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speak();
-            }
-        });
 
+        mVoiceBtn.setOnClickListener(v -> speak());
+
+        Button notificationButton = findViewById(R.id.notificationButton);
+
+        notificationButton.setOnClickListener(v -> {
+            Toast.makeText(this, "Set reminder", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            // get time - repeats every 10 seconds
+            long currentTime = System.currentTimeMillis();
+            long reminderTime = 300 * 10;
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + reminderTime, pendingIntent);
+        });
     }
 
     private void speak() {
@@ -88,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speaketh");
-
 
         try {
             startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
@@ -137,6 +138,36 @@ public class MainActivity extends AppCompatActivity {
 
                 //mTextTv.setText(result.get(0));
             }
+        }
+    }
+
+    // method for creating notification channel
+    private void createNotificationChannel() {
+
+        //
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            // initializing channel and setting default paramters
+            CharSequence channelName = "reminderChannel";
+            String desc = "Channel for reminders";
+            int priorityLevel = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("notifyMe", channelName, priorityLevel);
+            channel.setDescription(desc);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void playMusic(String id) {
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try{
+            startActivity(appIntent);
+        }
+        catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
         }
     }
 
