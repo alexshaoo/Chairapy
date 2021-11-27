@@ -1,0 +1,63 @@
+{"intents": [
+    {"tag": "greeting",
+     "patterns": [
+         "Hi", 
+         "How are you", 
+         "Is anyone there?", 
+         "Hello", 
+         "Good day",
+         "What's up",
+         "hey what's up",
+         "what is up",
+         "hello, how are you?",
+        ],
+     "responses": [
+         "Hello, thanks for visiting", 
+         "Good to see you again", 
+         "Hi there, how can I help?"
+        ],
+     "context_set": ""
+    },
+
+    {"tag": "greeting",
+        "patterns": [
+            "I got to go now", 
+            "I gotta go", 
+            "I'll be back",
+            "I'll get back to you", 
+            "I'll miss you",
+            "It's been nice to talk to you",
+            "adios",
+            "alright bye",
+            "alright good night",
+            "appreciate the chat",
+            "asta la vista",
+            "back in a bit",
+            "be back in 5 minutes",
+            "bye", 
+            "bye bye",
+            "bye bye see you soon",
+            "bye bye see you",
+            "bye bye take care",
+            "bye for now",
+            "bye good night",
+            "bye-bye",
+            "chat later",
+            "get lost",
+            "going to bed",
+            "going to bed now",
+            "good bye",
+            "good night",
+            "good night bye"
+
+           ],
+        "responses": [
+            "Hello, thanks for visiting", 
+            "Good to see you again", 
+            "Hi there, how can I help?"
+           ],
+        "context_set": ""
+       }
+
+    ]
+}

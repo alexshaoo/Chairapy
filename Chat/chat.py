@@ -10,7 +10,7 @@ from colorama import  Fore, Style, Back
 import random
 import pickle
 
-with open("./data.json") as file:
+with open("./data3.json") as file:
     data = json.load(file)
 
 def chat():
