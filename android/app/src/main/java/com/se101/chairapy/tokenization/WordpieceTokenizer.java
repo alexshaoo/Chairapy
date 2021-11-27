@@ -22,7 +22,7 @@ import java.util.Map;
 public final class WordpieceTokenizer {
   private final Map<String, Integer> dic;
 
-  private static final String UNKNOWN_TOKEN = "[UNK]"; // For unknown words.
+  private static final String UNKNOWN_TOKEN = "<UNKNOWN>"; // For unknown words.
   private static final int MAX_INPUTCHARS_PER_WORD = 200;
 
   public WordpieceTokenizer(Map<String, Integer> vocab) {

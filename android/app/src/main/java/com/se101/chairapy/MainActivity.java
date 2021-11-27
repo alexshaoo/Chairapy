@@ -1,11 +1,15 @@
 package com.se101.chairapy;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +26,12 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,10 +43,11 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
+    private Handler handler;
+    BertEmotionModel model;
 
     //TextView mTextTv;
     ImageButton mVoiceBtn;
-    private HashMap<String, Integer> tokensDic;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,22 @@ public class MainActivity extends AppCompatActivity {
 
         //mTextTv = findViewById(R.id.textTV);
         mVoiceBtn = findViewById(R.id.voiceBtn);
+        NumberPicker BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
+        BuzzSetter.setMinValue(5);
+        BuzzSetter.setMaxValue(120);
+        BuzzSetter.setValue(30);
+
+        //Gets whether the selector wheel wraps when reaching the min/max value.
+        BuzzSetter.setWrapSelectorWheel(true);
+
+        //Set a value change listener for NumberPicker
+        BuzzSetter.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal){
+                //Display the newly selected number from picker
+                Log.e("Selected Number", String.valueOf(newVal));
+            }
+        });
 
         mVoiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,33 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 speak();
             }
         });
-
-        // get tokens for ml
-        InputStream is = getApplicationContext().getResources().openRawResource(R.raw.vocab);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        tokensDic = new HashMap<String, Integer>();
-
-        int count = 0;
-        while(true) {
-            // replaces while(reader.read()) in case reader is badly initialized
-            try {
-                if (!reader.ready()) break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // init line so we can use try catch
-            String line = null;
-            try {
-                line = reader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            tokensDic.put(line, count);
-            count++;
-        }
-
-        Log.e("size", String.valueOf(tokensDic.size()));
 
     }
 
@@ -117,35 +113,49 @@ public class MainActivity extends AppCompatActivity {
                 if(result.size()>0){
                     if(result.size()>1) Log.e("bruh", "your result size too big");
 
-                    FullTokenizer tokenizer = new FullTokenizer(tokensDic, /* doLowerCase= */ true);
-                    List<String> resTokens = tokenizer.tokenize(result.get(0));
+                    String text = result.get(0);
+                    Context context = getApplicationContext();
+                    model = new BertEmotionModel(context);
+                    handler = new Handler();
+                    handler.post(
+                            () -> {
+                                model.load();
+                            });
 
-                    List<Integer> resIds = tokenizer.convertTokensToIds(resTokens);
-
-//                    try {
-//                        Emotion model = Emotion.newInstance(getApplicationContext());
-//
-//                        //Creates inputs for reference.
-//                        TensorBuffer ids = TensorBuffer.createFixedSize(new int[]{1, 128}, DataType.INT32);
-//                        ids.loadBuffer(byteBuffer);
-//                        TensorBuffer segmentIds = TensorBuffer.createFixedSize(new int[]{1, 128}, DataType.INT32);
-//                        segmentIds.loadBuffer(byteBuffer);
-//                        TensorBuffer mask = TensorBuffer.createFixedSize(new int[]{1, 128}, DataType.INT32);
-//                        mask.loadBuffer(byteBuffer);
-//
-//                        // Runs model inference and gets result.
-//                        Emotion.Outputs outputs = model.process(ids, segmentIds, mask);
-//                        List<Category> probability = outputs.getProbabilityAsCategoryList();
-//
-//                        // Releases model resources if no longer used.
-//                        model.close();
-//                    } catch (IOException e) {
-//                        // TODO Handle the exception
-//                    }
+                    try {
+                        //Emotion model = Emotion.newInstance(context);
+                        inferEmotion(text);
+                        Log.e("model", text);
+                        handler.post(
+                                () -> {
+                                    model.unload();
+                                });
+                    } catch (Exception e) {
+                        // TODO Handle the exception
+                    }
                 }
 
                 //mTextTv.setText(result.get(0));
             }
         }
+    }
+
+    private void inferEmotion(final String text) {
+        handler.post(
+                () -> {
+                    // Run text classification with TF Lite.
+                    Map<Integer, Object> out = model.classify(text);
+
+                    // @ music kids: here r examples on how to access the output data
+                    // model.getLabels().get(idx) is an emotion
+                    // obj[0][idx] is the probability for that emotion
+                    for(int i=0; i<out.size(); i++){
+                        Log.v("inference", text);
+                        float[][] obj = (float[][]) out.get(i); // [1,5] by model architecture
+                        for(int j=0; j<obj[0].length; j++){
+                            Log.v("inference", model.getLabels().get(j) + " : " + String.valueOf(obj[0][j]));
+                        }
+                    }
+                });
     }
 }

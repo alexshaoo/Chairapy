@@ -1,4 +1,23 @@
-/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+/*
+MODIFIED Nov 25, 2021
+by UWaterloo SE101 Fall '21 Chairapy project group
+
+In compliance with the below license (APLv2 section 4a):
+This file has been modified to suit the current application at
+
+    https://github.com/alexshaoo/Chairapy/tree/main/android
+
+In particular, the modified sections are:
+  -  string constant for start/sep token
+  -  convertTokensToIds:
+       -  added start token at beginning of list if token exists
+       -  added sep token at end of list if token exists
+
+DO NOT remove this section. We do not want to hold legal responsibility
+as we are bright young adults looking to get rich and successful.
+==============================================================================
+
+Copyright 2019 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,6 +33,8 @@ limitations under the License.
 ==============================================================================*/
 package com.se101.chairapy.tokenization;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +48,8 @@ public final class FullTokenizer {
   private final BasicTokenizer basicTokenizer;
   private final WordpieceTokenizer wordpieceTokenizer;
   private final Map<String, Integer> dic;
+
+  private static final String START = "<START>";
 
   public FullTokenizer(Map<String, Integer> inputDic, boolean doLowerCase) {
     dic = inputDic;
@@ -44,6 +67,9 @@ public final class FullTokenizer {
 
   public List<Integer> convertTokensToIds(List<String> tokens) {
     List<Integer> outputIds = new ArrayList<>();
+    if (dic.containsKey(START)) {
+      outputIds.add(dic.get(START));
+    }
     for (String token : tokens) {
       outputIds.add(dic.get(token));
     }
