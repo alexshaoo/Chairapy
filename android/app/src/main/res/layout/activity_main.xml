@@ -50,7 +50,7 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="@string/toggle_reminders"
-        android:textSize="20sp" />
+        android:textSize="@dimen/big_font" />
 
     <Button
         android:id="@+id/notificationButton"
@@ -116,7 +116,7 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="@string/speak_prompt"
-        android:textSize="24sp"
+        android:textSize="@dimen/big_font"
         android:textStyle="normal" />
 
     <ImageButton
