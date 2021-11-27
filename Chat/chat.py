@@ -34,7 +34,7 @@ def chat():
         tag = lbl_encoder.inverse_transform([np.argmax(result)])
 
         for i in data['intents']:
-            if i['intent'] == tag:
+            if i['tag'] == tag:
                 print(Fore.GREEN + "ChatBot:" + Style.RESET_ALL, np.random.choice(i['responses']))
 
 print(Fore.YELLOW + "Start Messaging" + Style.RESET_ALL)
