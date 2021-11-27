@@ -4,7 +4,9 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.content.Context;
 import android.content.Intent;
@@ -24,12 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.se101.chairapy.ml.Emotion;
 import com.se101.chairapy.tokenization.FullTokenizer;
-
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.label.Category;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         //mTextTv = findViewById(R.id.textTV);
         mVoiceBtn = findViewById(R.id.voiceBtn);
+        /*
         NumberPicker BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
         BuzzSetter.setMinValue(5);
         BuzzSetter.setMaxValue(120);
@@ -84,13 +82,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Selected Number", String.valueOf(newVal));
             }
         });
+        */
 
-        mVoiceBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speak();
-            }
-        });
+        mVoiceBtn.setOnClickListener(v -> speak());
 
         Button notificationButton = findViewById(R.id.notificationButton);
 
@@ -182,6 +176,18 @@ public class MainActivity extends AppCompatActivity {
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void playMusic(String id) {
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try{
+            startActivity(appIntent);
+        }
+        catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
         }
     }
 
