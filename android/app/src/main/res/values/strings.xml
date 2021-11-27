@@ -8,4 +8,6 @@
     <string name="how_do_i_look">How do I look?</string>
     <string name="speak_prompt">How are you feeling?</string>
     <string name="camera">Camera</string>
+    <string name="toggle_reminders">Toggle Reminders</string>
+    <string name="start">Start</string>
 </resources>

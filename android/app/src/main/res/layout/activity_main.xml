@@ -14,6 +14,28 @@
     <!-- guys what does this do -->
 
     <TextView
+        android:id="@+id/relaxTxt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/toggle_reminders"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/notificationButton"
+        android:layout_width="144dp"
+        android:layout_height="97dp"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:text="@string/start"
+        app:cornerRadius="16dp"
+        tools:ignore="TextContrastCheck,TextContrastCheck" />
+
+    <TextView
         android:id="@+id/relaxTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
