@@ -15,6 +15,9 @@ In particular, the modified sections are:
      -  different data structures to fit model architecture
   -  loadLabelFile(): added boolean to avoid null lines
   -  loadDictionaryFile(): different data structures
+  -  classify(): 
+     -  in/out structures to fit model architecture
+     -  added extra error logging
 
 
 DO NOT remove this section. We do not want to hold legal responsibility
@@ -127,6 +130,7 @@ public class BertEmotionModel {
     }
 
     /** Classify an input string and returns the classification results. */
+    /** MODIFIED FROM ORIGINAL (see file header) */
     public synchronized Map<Integer, Object> classify(String text) {
         Log.e(TAG, text);
         // Pre-prosessing.
@@ -198,8 +202,6 @@ public class BertEmotionModel {
             if(line.length < 2) continue;
             tokensDic.put(line[0], Integer.valueOf(line[1]));
         }
-
-        Log.e("size", String.valueOf(tokensDic.size()));
     }
 
     /** Pre-prosessing: tokenize and map the input words into a float array. */
