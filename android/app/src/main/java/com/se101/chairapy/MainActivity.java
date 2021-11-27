@@ -5,45 +5,25 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.se101.chairapy.tokenization.FullTokenizer;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
@@ -65,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         //mTextTv = findViewById(R.id.textTV);
         mVoiceBtn = findViewById(R.id.voiceBtn);
-        /*
+
         NumberPicker BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
         BuzzSetter.setMinValue(5);
         BuzzSetter.setMaxValue(120);
@@ -82,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Selected Number", String.valueOf(newVal));
             }
         });
-        */
+
 
         mVoiceBtn.setOnClickListener(v -> speak());
 
