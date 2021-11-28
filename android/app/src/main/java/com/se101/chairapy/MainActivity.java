@@ -1,7 +1,5 @@
 package com.se101.chairapy;
 
-import java.time.*;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -26,7 +24,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
@@ -85,8 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
                 // period for reminders to 'get up'
-                int period = BuzzSetter.getValue() * 1000 * 60;
-                Toast.makeText(this, Integer.toString(BuzzSetter.getValue() * 1000 * 60), Toast.LENGTH_SHORT).show();
+                int period = BuzzSetter.getValue() * 60 * 1000;
                 Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     @Override
