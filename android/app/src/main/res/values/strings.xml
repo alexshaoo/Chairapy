@@ -10,4 +10,6 @@
     <string name="camera">Camera</string>
     <string name="toggle_reminders">Toggle Reminders</string>
     <string name="start">Start</string>
+    <string name="minutes">minutes.</string>
+    <string name="remind_me_to_move_every">Remind me to move every</string>
 </resources>
