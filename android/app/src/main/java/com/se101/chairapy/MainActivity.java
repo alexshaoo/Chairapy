@@ -84,18 +84,22 @@ public class MainActivity extends AppCompatActivity {
 
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
+                // period for reminders to 'get up'
+                int period = BuzzSetter.getValue() * 1000 * 60;
+                Toast.makeText(this, Integer.toString(BuzzSetter.getValue() * 1000 * 60), Toast.LENGTH_SHORT).show();
                 Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        // get time - repeats every 10 seconds
+                        // get time - repeats every user-selected number of minutes
                         long currentTime = System.currentTimeMillis();
-                        long reminderTime = 300 * 10;
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + reminderTime, pendingIntent);
-                    }
-                }, 0, 5000);
+                        long reminderTime = currentTime + (long) period;
 
-                // change based off of
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
+                    }
+                }, 0, period);
+
+                /* change based off of
                 int dinnerHour = 18;
                 int dinnerMinute = 0;
                 int sleepHour = 3;
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     // is it time to pass out?
                     System.out.println("bedtime!");
                 }
+                */
 
                 toggle.set(true);
             } else {
