@@ -171,6 +171,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* make a json
+    anger -> suggest to go work out
+    fear -> show me some cute cats
+    joy -> show me dance songs /show me some cute cats / go workout
+    neutral -> ANIMENZ HEHEHEHEH
+    sadness -> show me uplifting songs/ show me some sad songs
+    cancel -> Thanks!
+    sad songs: https://www.youtube.com/watch?v=CveANi17YfU&list=PL3-sRm8xAzY-w9GS19pLXMyFRTuJcuUjy
+     */
+
     private void inferEmotion(final String text) {
         handler.post(
                 () -> {
