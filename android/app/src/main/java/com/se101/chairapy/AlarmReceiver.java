@@ -22,12 +22,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        // create notification channel
-
-
-        // call notify - unique ID 200
-
-        notificationManager.notify(200, builder.build());
+        // call notify - unique ID 1
+        notificationManager.notify(1, builder.build());
 
         // generate text
         Toast.makeText(context,"text",Toast.LENGTH_SHORT).show();

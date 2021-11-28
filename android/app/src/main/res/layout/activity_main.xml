@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="0dp">
 
     <LinearLayout
         android:id="@+id/Settings"
@@ -21,13 +21,13 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Remind me to move every "
+            android:text="@string/remind_me_to_move_every"
             android:textSize="@dimen/font_size" />
 
         <NumberPicker
             android:id="@+id/buzzSet"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
+            android:layout_width="20dp"
+            android:layout_height="50dp"
             android:dividerPadding="0dp"
             android:scaleX="1"
             android:scaleY="1"
@@ -37,7 +37,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" minutes."
+            android:text="@string/minutes"
             android:textSize="@dimen/font_size" />
     </LinearLayout>
 
@@ -106,12 +106,13 @@
         android:layout_marginTop="12dp"
         android:layout_marginRight="12dp"
         android:layout_marginBottom="40dp"
-        android:background="@drawable/roundcorner"
+        android:background="@drawable/round_corner"
         android:color="@color/blue"
         android:contentDescription="@string/speak_prompt"
         android:elevation="10dp"
+        android:minHeight="60dp"
         android:padding="12dp"
         android:src="@drawable/ic_mic_black_36dp"
-        tools:ignore="ImageContrastCheck" />
+        tools:ignore="ImageContrastCheck,DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
 
 </LinearLayout>

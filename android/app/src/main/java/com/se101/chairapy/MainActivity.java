@@ -1,5 +1,8 @@
 package com.se101.chairapy;
 
+import java.time.*;
+
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -19,11 +22,16 @@ import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
@@ -33,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
     //TextView mTextTv;
     ImageButton mVoiceBtn;
 
-    //Receiver for alarms
-    AlarmReceiver receiver;
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,20 +73,57 @@ public class MainActivity extends AppCompatActivity {
         mVoiceBtn.setOnClickListener(v -> speak());
 
         Button notificationButton = findViewById(R.id.notificationButton);
+        AtomicBoolean toggle = new AtomicBoolean(false);
 
         notificationButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Set reminder", Toast.LENGTH_SHORT).show();
+            if (!toggle.get()) {
+                Toast.makeText(this, "Set reminder", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+                Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+                @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
 
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-            // get time - repeats every 10 seconds
-            long currentTime = System.currentTimeMillis();
-            long reminderTime = 300 * 10;
+                // period for reminders to 'get up'
+                int period = BuzzSetter.getValue() * 1000 * 60;
+                Toast.makeText(this, Integer.toString(BuzzSetter.getValue() * 1000 * 60), Toast.LENGTH_SHORT).show();
+                Timer t = new Timer();
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        // get time - repeats every user-selected number of minutes
+                        long currentTime = System.currentTimeMillis();
+                        long reminderTime = currentTime + (long) period;
 
-            alarmManager.set(AlarmManager.RTC_WAKEUP, currentTime + reminderTime, pendingIntent);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime, pendingIntent);
+                    }
+                }, 0, period);
+
+                /* change based off of
+                int dinnerHour = 18;
+                int dinnerMinute = 0;
+                int sleepHour = 3;
+                int sleepMinute = 0;
+
+                ZoneId zone = ZoneId.of("America/Toronto");
+                LocalTime time = LocalTime.now(zone);
+                System.out.println(time);
+
+                if (time.getHour() == dinnerHour && time.getMinute() == dinnerMinute) {
+                    // is it time to consume?
+                    System.out.println("dinnertime!");
+                } else if (time.getHour() == sleepHour && time.getMinute() == sleepMinute) {
+                    // is it time to pass out?
+                    System.out.println("bedtime!");
+                }
+                */
+
+                toggle.set(true);
+            } else {
+                Toast.makeText(this, "Turned off reminder toggle", Toast.LENGTH_SHORT).show();
+                toggle.set(false);
+            }
+
         });
     }
 
@@ -97,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Your Device Doesn't Support Speech Input", Toast.LENGTH_SHORT).show();
             //Toast.makeText(this, "Not Recognized "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
