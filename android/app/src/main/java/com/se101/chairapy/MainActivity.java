@@ -1,7 +1,5 @@
 package com.se101.chairapy;
 
-import java.time.*;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -26,7 +24,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
@@ -85,8 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
                 // period for reminders to 'get up'
-                int period = BuzzSetter.getValue() * 1000 * 60;
-                Toast.makeText(this, Integer.toString(BuzzSetter.getValue() * 1000 * 60), Toast.LENGTH_SHORT).show();
+                int period = BuzzSetter.getValue() * 60 * 1000;
                 Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     @Override
@@ -104,11 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 int dinnerMinute = 0;
                 int sleepHour = 3;
                 int sleepMinute = 0;
-
                 ZoneId zone = ZoneId.of("America/Toronto");
                 LocalTime time = LocalTime.now(zone);
                 System.out.println(time);
-
                 if (time.getHour() == dinnerHour && time.getMinute() == dinnerMinute) {
                     // is it time to consume?
                     System.out.println("dinnertime!");
@@ -212,16 +206,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(webIntent);
         }
     }
-
-    /* make a json
-    anger -> suggest to go work out
-    fear -> show me some cute cats
-    joy -> show me dance songs /show me some cute cats / go workout
-    neutral -> ANIMENZ HEHEHEHEH
-    sadness -> show me uplifting songs/ show me some sad songs
-    cancel -> Thanks!
-    sad songs: https://www.youtube.com/watch?v=CveANi17YfU&list=PL3-sRm8xAzY-w9GS19pLXMyFRTuJcuUjy
-     */
 
     private void inferEmotion(final String text) {
         handler.post(
