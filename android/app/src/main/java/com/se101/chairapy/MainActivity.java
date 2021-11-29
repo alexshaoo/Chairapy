@@ -95,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
                 // period for reminders to 'get up'
-                int period = BuzzSetter.getValue() * 1000 * 60;
-                Toast.makeText(this, Integer.toString(BuzzSetter.getValue() * 1000 * 60), Toast.LENGTH_SHORT).show();
+                int period = BuzzSetter.getValue() * 60 * 1000;
                 Timer t = new Timer();
                 t.schedule(new TimerTask() {
                     @Override
@@ -114,11 +113,9 @@ public class MainActivity extends AppCompatActivity {
                 int dinnerMinute = 0;
                 int sleepHour = 3;
                 int sleepMinute = 0;
-
                 ZoneId zone = ZoneId.of("America/Toronto");
                 LocalTime time = LocalTime.now(zone);
                 System.out.println(time);
-
                 if (time.getHour() == dinnerHour && time.getMinute() == dinnerMinute) {
                     // is it time to consume?
                     System.out.println("dinnertime!");
