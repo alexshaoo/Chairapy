@@ -73,11 +73,11 @@ public class BertEmotionModel {
     private static final int SENTENCE_LEN = 128; // The maximum length of an input sentence.
     // Simple delimiter to split words.
     private static final String SIMPLE_SPACE_OR_PUNCTUATION = " |\\,|\\.|\\!|\\?|\n";
-    private static final String MODEL_PATH = "emotion.tflite";
+    private static final String MODEL_PATH = "emotion_2.tflite";
 
-    private static final String START = "<START>";
-    private static final String PAD = "<PAD>";
-    private static final String UNKNOWN = "<UNKNOWN>";
+    private static final String START = "[CLS]";
+    private static final String PAD = "[PAD]";
+    private static final String UNKNOWN = "[UNK]";
 
     /** Number of results to show in the UI. */
     private static final int MAX_RESULTS = 3;
@@ -196,11 +196,18 @@ public class BertEmotionModel {
     private void loadDictionaryFile(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-        while(reader.ready()) {
-            // init line so we can use try catch
-            String[] line = reader.readLine().split(" ");
-            if(line.length < 2) continue;
-            tokensDic.put(line[0], Integer.valueOf(line[1]));
+        if(START.charAt(0) == '<'){
+            while(reader.ready()) {
+                    String[] line = reader.readLine().split(" ");
+                    if(line.length < 2) continue;
+                    tokensDic.put(line[0], Integer.valueOf(line[1]));
+            }
+        } else {
+            int count = 0;
+            while(reader.ready()) {
+                String token = reader.readLine();
+                tokensDic.put(token, count);
+            }
         }
     }
 

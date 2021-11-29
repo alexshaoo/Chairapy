@@ -168,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
                     model = new BertEmotionModel(context);
                     handler = new Handler();
                     handler.post(() -> { model.load(); });
-
                     try {
                         Log.e("classify", "do");
                         inferEmotion(text);
@@ -252,10 +251,10 @@ public class MainActivity extends AppCompatActivity {
                     for(int i=0; i<out.size(); i++){
                         float[][] obj = (float[][]) out.get(i); // [1,5] by model architecture
                         for(int j=0; j<obj[0].length; j++){
-                            if(obj[0][j] > 0.2){
+                            if(obj[0][j] > 0.16){
                                 emotions.add(model.getLabels().get(j));
-                                Log.e("emote", model.getLabels().get(j));
                             }
+                            Log.e("emote", model.getLabels().get(j) + " : " + String.valueOf(obj[0][j]));
                         }
                     }
                     emotionsReceived = true;
