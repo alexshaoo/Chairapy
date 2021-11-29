@@ -26,7 +26,7 @@
 
         <NumberPicker
             android:id="@+id/buzzSet"
-            android:layout_width="30dp"
+            android:layout_width="35dp"
             android:layout_height="50dp"
             android:dividerPadding="0dp"
             android:scaleX="1"
