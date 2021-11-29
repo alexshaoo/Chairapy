@@ -261,7 +261,8 @@ public class MainActivity extends AppCompatActivity {
 
                     ArrayList<JSONObject> suggestions = getSuggestions(this, emotions);
 
-                   showSuggestions(this, suggestions);
+                    assert suggestions != null;
+                    showSuggestions(this, suggestions);
                 });
     }
 
@@ -309,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder suggestionBuilder = new AlertDialog.Builder(context);
         suggestionBuilder.setTitle("Hey bud, I hope life gets better!");
 
-        String items[] = new String[suggestions.size()];
+        String[] items = new String[suggestions.size()];
         for(int i=0; i< suggestions.size(); i++){
             try {
                 items[i] = suggestions.get(i).getString("msg");
@@ -321,6 +322,12 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=" + suggestions.get(id).get("url"))));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.e("dballs", suggestions.get(2).toString());
                         Log.e("model", suggestions.get(id).toString());
                     }
                 });
