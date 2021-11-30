@@ -37,7 +37,9 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+
 import java.util.HashMap;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
-        //mTextTv = findViewById(R.id.textTV);
         mVoiceBtn = findViewById(R.id.voiceBtn);
         mVoiceBtn.setOnClickListener(v -> speak());
 
@@ -345,11 +346,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         try {
-                            startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=" + suggestions.get(id).get("url"))));
+                            if (suggestions.get(id).get("isYoutube").equals(1)) {
+                                startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=" + suggestions.get(id).get("url"))));
+                            } else {
+                                Log.e("more dicks", suggestions.get(id).toString());
+                                startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://tenor.com/search/cute-kittens-gifs")));
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Log.e("dballs", suggestions.get(2).toString());
                         Log.e("model", suggestions.get(id).toString());
                     }
                 });

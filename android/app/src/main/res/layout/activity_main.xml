@@ -10,6 +10,20 @@
     android:orientation="vertical"
     android:padding="0dp">
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/chairapy"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/chair" />
+
     <LinearLayout
         android:id="@+id/Settings"
         android:layout_width="match_parent"
@@ -39,6 +53,7 @@
             android:layout_height="wrap_content"
             android:text="@string/minutes"
             android:textSize="@dimen/font_size" />
+
     </LinearLayout>
 
     <TextView
