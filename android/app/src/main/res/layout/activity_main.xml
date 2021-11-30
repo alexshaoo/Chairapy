@@ -10,6 +10,20 @@
     android:orientation="vertical"
     android:padding="0dp">
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/chairapy"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/chair" />
+
     <LinearLayout
         android:id="@+id/Settings"
         android:layout_width="match_parent"
@@ -39,6 +53,7 @@
             android:layout_height="wrap_content"
             android:text="@string/minutes"
             android:textSize="@dimen/font_size" />
+
     </LinearLayout>
 
     <!-- guys what does this do -->
@@ -82,7 +97,7 @@
         android:layout_margin="12dp"
         android:elevation="10dp"
         android:stateListAnimator="@null"
-        android:text="@string/music"
+        android:text="@string/relax"
         app:cornerRadius="16dp"
         tools:ignore="TextContrastCheck,TextContrastCheck" />
 
