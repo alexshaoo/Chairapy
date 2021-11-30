@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     // bluetooth stuff
     public static BluetoothSocket socket;
-    public String chairAddress;
+    ProgressDialog dialog;
     NumberPicker BuzzSetter;
     private BluetoothAdapter bluetoothAdapter;
     private ConnectThread btConnection;
@@ -100,9 +101,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal){
                 //Display the newly selected number from picker
-                Log.e("Selected Number", String.valueOf(newVal));
+                String val = String.format("<%3d>", newVal);
+                Log.e("Selected Number", val);
                 // Send command to Arduino board
-                connectedThread.write(String.valueOf(newVal).getBytes());
+                connectedThread.write(val.getBytes());
             }
         });
         toggleNumPicker();
@@ -401,6 +403,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("BT device", deviceName + "\t" + deviceAddress);
                 if(deviceName.contains("HC-06")){
                     Log.v("BT device", "found");
+                    dialog = ProgressDialog.show(this, deviceName,
+                            "Connecting...", true);
                     btConnection = new ConnectThread(device);
                     btConnection.start();
                     Log.v("BT device", "connecting");
@@ -442,21 +446,29 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             // Cancel discovery because it otherwise slows down the connection.
             // bluetoothAdapter.cancelDiscovery();
-
-            try {
-                // Connect to the remote device through the socket. This call blocks
-                // until it succeeds or throws an exception.
-                mmSocket.connect();
-            } catch (IOException connectException) {
-                Log.e("Connect thread", "cannot connect");
-                Log.e("Connect thread", connectException.toString());
-                // Unable to connect; close the socket and return.
+            int maxAttempts = 5;
+            boolean done = false;
+            while(true && !done){
                 try {
-                    mmSocket.close();
-                } catch (IOException closeException) {
-                    Log.e("Connect Thread", "Could not close the client socket", closeException);
+                    // Connect to the remote device through the socket. This call blocks
+                    // until it succeeds or throws an exception.
+                    mmSocket.connect();
+                    done = true;
+                } catch (IOException connectException) {
+                    Log.e("Connect thread", "cannot connect");
+                    Log.e("Connect thread", connectException.toString());
+                    // Unable to connect; close the socket and return.
+                    if(maxAttempts == 0){
+                        try {
+                            mmSocket.close();
+                            runOnUiThread(()->{ dialog.dismiss(); });
+                        } catch (IOException closeException) {
+                            Log.e("Connect Thread", "Could not close the client socket", closeException);
+                        }
+                        return;
+                    }
                 }
-                return;
+                maxAttempts--;
             }
 
             // The connection attempt succeeded. Perform work associated with
@@ -466,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
             connectedThread.start();
             BT_CONNECTED = true;
             Log.v(TAG_BT, "connected");
+            runOnUiThread(()->{ dialog.dismiss(); });
             toggleNumPicker();
         }
 
@@ -541,13 +554,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG_BT, "Error occurred when sending data", e);
 
                 // Send a failure message back to the activity.
-                Message writeErrorMsg =
-                        handler.obtainMessage(MESSAGE_TOAST);
+                Message writeErrorMsg = BThandler.obtainMessage(MESSAGE_TOAST);
                 Bundle bundle = new Bundle();
                 bundle.putString("toast",
                         "Couldn't send data to the other device");
                 writeErrorMsg.setData(bundle);
-                handler.sendMessage(writeErrorMsg);
+                BThandler.sendMessage(writeErrorMsg);
             }
         }
 
