@@ -49,7 +49,8 @@ public final class FullTokenizer {
   private final WordpieceTokenizer wordpieceTokenizer;
   private final Map<String, Integer> dic;
 
-  private static final String START = "<START>";
+  private static final String START = "[CLS]";
+  private static final String SEP = "[SEP]";
 
   public FullTokenizer(Map<String, Integer> inputDic, boolean doLowerCase) {
     dic = inputDic;
@@ -72,6 +73,9 @@ public final class FullTokenizer {
     }
     for (String token : tokens) {
       outputIds.add(dic.get(token));
+    }
+    if (dic.containsKey(SEP)) {
+      outputIds.add(dic.get(SEP));
     }
     return outputIds;
   }

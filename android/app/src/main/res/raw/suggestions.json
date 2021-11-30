@@ -1,0 +1,38 @@
+{
+  "emotionMLTips": [
+    {
+      "emotion": "anger joy love surprise",
+      "msg": "Let's go do a workout!"
+    },
+    {
+      "emotion": "fear joy sadness anger love",
+      "msg": "Show me some cute cats",
+      "url": "https://tenor.com/search/cute-kittens-gifs",
+      "isYoutube": 0
+    },
+    {
+      "emotion":"joy love",
+      "msg": "Play me some dance songs!",
+      "url": "pRbxlpvXw2s",
+      "isYoutube?": 1
+    },
+    {
+      "emotion":"anger fear joy love sadness surprise",
+      "msg": "Play me your favorite music!",
+      "url": "lB4PRX737-0&list=UUyW-leqPXUunrXXxFjpZ7VA",
+      "isYoutube?": 1
+    },
+    {
+      "emotion":"fear joy love sadness",
+      "msg": "Play me some uplifting songs! (Fix url)",
+      "url": "pRbxlpvXw2s", 
+      "isYoutube": 1
+    },
+    {
+      "emotion":"sadness",
+      "msg": "Play me some sad songs",
+      "url": "CveANi17YfU&list=PL3-sRm8xAzY-w9GS19pLXMyFRTuJcuUjy", 
+      "isYoutube": 1
+    }
+  ]
+}

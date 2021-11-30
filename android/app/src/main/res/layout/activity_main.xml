@@ -26,7 +26,7 @@
 
         <NumberPicker
             android:id="@+id/buzzSet"
-            android:layout_width="20dp"
+            android:layout_width="35dp"
             android:layout_height="50dp"
             android:dividerPadding="0dp"
             android:scaleX="1"
@@ -85,28 +85,6 @@
         android:text="@string/music"
         app:cornerRadius="16dp"
         tools:ignore="TextContrastCheck,TextContrastCheck" />
-
-    <TextView
-        android:id="@+id/emotionTxt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:text="@string/how_do_i_look"
-        android:textSize="@dimen/font_size" />
-
-    <Button
-        android:id="@+id/cameraBtn"
-        android:layout_width="144dp"
-        android:layout_height="97dp"
-        android:layout_gravity="center"
-        android:layout_margin="12dp"
-        android:elevation="10dp"
-        android:stateListAnimator="@null"
-        android:text="@string/camera"
-        app:cornerRadius="16dp"
-        tools:ignore="TextContrastCheck" />
 
     <TextView
         android:id="@+id/textTV"
