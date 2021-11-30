@@ -9,6 +9,9 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,12 +40,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
+    private static final int REQUEST_ENABLE_BT = 2000;
     private Handler handler;
     BertEmotionModel model;
     JSONArray suggestionArr;
@@ -50,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
     //TextView mTextTv;
     ImageButton mVoiceBtn;
+
+    // bluetooth stuff
+    public static BluetoothSocket socket;
+    public String chairAddress;
+    private BluetoothAdapter bluetoothAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -61,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
 
         //mTextTv = findViewById(R.id.textTV);
         mVoiceBtn = findViewById(R.id.voiceBtn);
+        mVoiceBtn.setOnClickListener(v -> speak());
+
 
         NumberPicker BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
         BuzzSetter.setMinValue(5);
@@ -78,10 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Selected Number", String.valueOf(newVal));
             }
         });
-
-
-        mVoiceBtn.setOnClickListener(v -> speak());
-
         Button notificationButton = findViewById(R.id.notificationButton);
         AtomicBoolean toggle = new AtomicBoolean(false);
 
@@ -132,6 +140,26 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        // bluetooth stuff
+        // future: more error handling
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
+        Button connectBtn = findViewById(R.id.btBtn);
+        connectBtn.setOnClickListener(v -> {
+            if (!bluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            } else {
+                listDevices();
+            }
+        });
+
+        //ConnectThread btconnection = new ConnectThread(pairedDevices)
     }
 
     private void speak() {
@@ -183,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
 
                 //mTextTv.setText(result.get(0));
             }
+        } else if (requestCode == REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
+                listDevices();
+            }
         }
     }
 
@@ -227,16 +259,6 @@ public class MainActivity extends AppCompatActivity {
         Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(webIntent);
     }
-
-    /* make a json
-    anger -> suggest to go work out
-    fear -> show me some cute cats
-    joy -> show me dance songs /show me some cute cats / go workout
-    neutral -> ANIMENZ HEHEHEHEH
-    sadness -> show me uplifting songs/ show me some sad songs
-    cancel -> Thanks!
-    sad songs: https://www.youtube.com/watch?v=CveANi17YfU&list=PL3-sRm8xAzY-w9GS19pLXMyFRTuJcuUjy
-     */
 
     private void inferEmotion(final String text) {
         ArrayList<String> emotions = new ArrayList<>();
@@ -334,5 +356,80 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog dialog = suggestionBuilder.create();
         dialog.show();
+    }
+
+    // BLOOO TOOOOOTTTHHHHHH
+    // bluetooth*
+
+    private void listDevices(){
+        // only checks for paired devices so far
+        // force the user to pair the chair beforehand?
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        String deviceName, deviceAddress;
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                deviceName = device.getName();
+                deviceAddress = device.getAddress(); // MAC address
+                Log.v("BT device", deviceName + "\t" + deviceAddress);
+                if(deviceName.contains("Book")){
+                    ConnectThread btConnection = new ConnectThread(device);
+                    btConnection.start();
+                }
+            }
+        }
+    }
+    // nesting a whole class like a boss
+    private class ConnectThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final BluetoothDevice mmDevice;
+
+        public ConnectThread(BluetoothDevice device) {
+            // Use a temporary object that is later assigned to mmSocket
+            // because mmSocket is final.
+            BluetoothSocket tmp = null;
+            mmDevice = device;
+
+            try {
+                // Get a BluetoothSocket to connect with the given BluetoothDevice.
+                // MY_UUID is the app's UUID string, also used in the server code.
+                tmp = device.createRfcommSocketToServiceRecord(device.getUuids()[0].getUuid());
+            } catch (IOException e) {
+                Log.e("Connect Thread", "Socket's create() method failed", e);
+            }
+            mmSocket = tmp;
+        }
+
+        public void run() {
+            // Cancel discovery because it otherwise slows down the connection.
+            // bluetoothAdapter.cancelDiscovery();
+
+            try {
+                // Connect to the remote device through the socket. This call blocks
+                // until it succeeds or throws an exception.
+                mmSocket.connect();
+            } catch (IOException connectException) {
+                Log.e("Connect thread", "cannot connect");
+                // Unable to connect; close the socket and return.
+                try {
+                    mmSocket.close();
+                } catch (IOException closeException) {
+                    Log.e("Connect Thread", "Could not close the client socket", closeException);
+                }
+                return;
+            }
+
+            // The connection attempt succeeded. Perform work associated with
+            // the connection in a separate thread.
+            //manageMyConnectedSocket(mmSocket);
+        }
+
+        // Closes the client socket and causes the thread to finish.
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) {
+                Log.e("Connect Thread", "Could not close the client socket", e);
+            }
+        }
     }
 }
