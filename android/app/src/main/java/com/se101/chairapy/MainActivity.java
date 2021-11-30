@@ -20,6 +20,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.os.ParcelUuid;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.widget.Button;
@@ -35,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -50,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SPEECH_INPUT = 1000;
     private static final int REQUEST_ENABLE_BT = 2000;
+    private String TAG_BT="BT device";
     private Handler handler;
     BertEmotionModel model;
     JSONArray suggestionArr;
@@ -61,7 +65,15 @@ public class MainActivity extends AppCompatActivity {
     // bluetooth stuff
     public static BluetoothSocket socket;
     public String chairAddress;
+    NumberPicker BuzzSetter;
     private BluetoothAdapter bluetoothAdapter;
+    private ConnectThread btConnection;
+    private ConnectedThread connectedThread;
+    public static final int MESSAGE_READ = 0;
+    public static final int MESSAGE_WRITE = 1;
+    public static final int MESSAGE_TOAST = 2;
+    private Handler BThandler = new Handler();
+    private boolean BT_CONNECTED = false;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -75,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         mVoiceBtn.setOnClickListener(v -> speak());
 
 
-        NumberPicker BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
+        BuzzSetter = (NumberPicker) findViewById(R.id.buzzSet);
         BuzzSetter.setMinValue(5);
         BuzzSetter.setMaxValue(120);
         BuzzSetter.setValue(30);
@@ -89,8 +101,12 @@ public class MainActivity extends AppCompatActivity {
             public void onValueChange(NumberPicker picker, int oldVal, int newVal){
                 //Display the newly selected number from picker
                 Log.e("Selected Number", String.valueOf(newVal));
+                // Send command to Arduino board
+                connectedThread.write(String.valueOf(newVal).getBytes());
             }
         });
+        toggleNumPicker();
+
         Button notificationButton = findViewById(R.id.notificationButton);
         AtomicBoolean toggle = new AtomicBoolean(false);
 
@@ -163,6 +179,13 @@ public class MainActivity extends AppCompatActivity {
         //ConnectThread btconnection = new ConnectThread(pairedDevices)
     }
 
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        btConnection.cancel();
+//        connectedThread.cancel();
+//    }
+
     private void speak() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -202,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
                         inferEmotion(text);
                         Log.e("classify", "done");
 
-
                         Log.e("model", text);
                         handler.post( () -> { model.unload(); });
                     } catch (Exception e) {
@@ -222,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
     // method for creating notification channel
     private void createNotificationChannel() {
 
-        //
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             // initializing channel and setting default paramters
@@ -254,7 +275,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(webIntent);
         }
     }
-
 
     private void openLink(String url) {
         Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -345,17 +365,20 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        JSONObject current = suggestions.get(id);
                         try {
-                            if (suggestions.get(id).get("isYoutube").equals(1)) {
-                                startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=" + suggestions.get(id).get("url"))));
-                            } else {
-                                Log.e("more dicks", suggestions.get(id).toString());
-                                startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://tenor.com/search/cute-kittens-gifs")));
+                            if(current.has("url")){
+                                if (current.get("isYoutube").equals(1)) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=" + suggestions.get(id).get("url"))));
+                                } else {
+                                    Log.e("more dicks", current.toString());
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(current.getString("url"))));
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Log.e("model", suggestions.get(id).toString());
+                        Log.e("model", current.toString());
                     }
                 });
 
@@ -376,14 +399,23 @@ public class MainActivity extends AppCompatActivity {
                 deviceName = device.getName();
                 deviceAddress = device.getAddress(); // MAC address
                 Log.v("BT device", deviceName + "\t" + deviceAddress);
-                if(deviceName.contains("Book")){
-                    ConnectThread btConnection = new ConnectThread(device);
+                if(deviceName.contains("HC-06")){
+                    Log.v("BT device", "found");
+                    btConnection = new ConnectThread(device);
                     btConnection.start();
+                    Log.v("BT device", "connecting");
                 }
             }
         }
     }
+
+    private void toggleNumPicker(){
+        runOnUiThread(() -> { BuzzSetter.setEnabled(BT_CONNECTED); });
+    }
     // nesting a whole class like a boss
+
+    // the code for the two classes below belong to the Bluetooth example under Android
+    // developer guide. We do not take credit.
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
@@ -397,6 +429,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Get a BluetoothSocket to connect with the given BluetoothDevice.
                 // MY_UUID is the app's UUID string, also used in the server code.
+                for(ParcelUuid pu : device.getUuids()){
+                    Log.e(TAG_BT, pu.toString());
+                }
                 tmp = device.createRfcommSocketToServiceRecord(device.getUuids()[0].getUuid());
             } catch (IOException e) {
                 Log.e("Connect Thread", "Socket's create() method failed", e);
@@ -414,6 +449,7 @@ public class MainActivity extends AppCompatActivity {
                 mmSocket.connect();
             } catch (IOException connectException) {
                 Log.e("Connect thread", "cannot connect");
+                Log.e("Connect thread", connectException.toString());
                 // Unable to connect; close the socket and return.
                 try {
                     mmSocket.close();
@@ -426,6 +462,11 @@ public class MainActivity extends AppCompatActivity {
             // The connection attempt succeeded. Perform work associated with
             // the connection in a separate thread.
             //manageMyConnectedSocket(mmSocket);
+            connectedThread = new ConnectedThread(mmSocket);
+            connectedThread.start();
+            BT_CONNECTED = true;
+            Log.v(TAG_BT, "connected");
+            toggleNumPicker();
         }
 
         // Closes the client socket and causes the thread to finish.
@@ -434,6 +475,88 @@ public class MainActivity extends AppCompatActivity {
                 mmSocket.close();
             } catch (IOException e) {
                 Log.e("Connect Thread", "Could not close the client socket", e);
+            }
+        }
+    }
+    private class ConnectedThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+        private byte[] mmBuffer; // mmBuffer store for the stream
+
+        public ConnectedThread(BluetoothSocket socket) {
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams; using temp objects because
+            // member streams are final.
+            try {
+                tmpIn = socket.getInputStream();
+            } catch (IOException e) {
+                Log.e(TAG_BT, "Error occurred when creating input stream", e);
+            }
+            try {
+                tmpOut = socket.getOutputStream();
+                if(!BT_CONNECTED) Log.w(TAG_BT, "bt not set as connected");
+            } catch (IOException e) {
+                Log.e(TAG_BT, "Error occurred when creating output stream", e);
+            }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+            Log.v(TAG_BT, "In out streams ready");
+            toggleNumPicker();
+        }
+
+        public void run() {
+            mmBuffer = new byte[1024];
+            int numBytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs.
+            while (true) {
+                try {
+                    // Read from the InputStream.
+                    numBytes = mmInStream.read(mmBuffer);
+                    // Send the obtained bytes to the UI activity.
+                    Message readMsg = BThandler.obtainMessage(MESSAGE_READ, numBytes, -1,
+                            mmBuffer);
+                    readMsg.sendToTarget();
+                } catch (IOException e) {
+                    Log.d(TAG_BT, "Input stream was disconnected", e);
+                    break;
+                }
+            }
+        }
+
+        // Call this from the main activity to send data to the remote device.
+        public void write(byte[] bytes) {
+            try {
+                mmOutStream.write(bytes);
+
+                // Share the sent message with the UI activity.
+                Message writtenMsg = BThandler.obtainMessage(MESSAGE_WRITE, -1, -1, mmBuffer);
+                writtenMsg.sendToTarget();
+            } catch (IOException e) {
+                Log.e(TAG_BT, "Error occurred when sending data", e);
+
+                // Send a failure message back to the activity.
+                Message writeErrorMsg =
+                        handler.obtainMessage(MESSAGE_TOAST);
+                Bundle bundle = new Bundle();
+                bundle.putString("toast",
+                        "Couldn't send data to the other device");
+                writeErrorMsg.setData(bundle);
+                handler.sendMessage(writeErrorMsg);
+            }
+        }
+
+        // Call this method from the main activity to shut down the connection.
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) {
+                Log.e(TAG_BT, "Could not close the connect socket", e);
             }
         }
     }
