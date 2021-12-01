@@ -373,7 +373,6 @@ public class MainActivity extends AppCompatActivity {
                                 if (current.get("isYoutube").equals(1)) {
                                     startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=" + suggestions.get(id).get("url"))));
                                 } else {
-                                    Log.e("more dicks", current.toString());
                                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(current.getString("url"))));
                                 }
                             }
