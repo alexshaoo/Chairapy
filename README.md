@@ -10,6 +10,7 @@ PS we have a private playstore signing key so don't try to publish our intellect
 Built on Arduino Uno using:
 - Bluetooth module
 - Stepper motor
+- Potentiometer
 - Resistors
 - Battery
 - Velostat
