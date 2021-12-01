@@ -15,7 +15,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyMe")
-                .setSmallIcon(R.drawable.chair)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Reminder")
                 .setContentText("go stretch or eat or smth")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
